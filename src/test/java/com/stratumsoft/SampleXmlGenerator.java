@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class SampleXmlGenerator {
 
-     String BASE_URI = "/schemas/";
+     String BASE_URI = "/schemas/XML/schemas.isotc211.org/19110/gfc/1.1/";
 
     XmlSchemaCollection coll;
     private XmlSchema schema;
@@ -61,7 +62,7 @@ public class SampleXmlGenerator {
 
     @Test
      public void testGenXml() throws Exception {
-        String xsdPath = "catalog.xsd";
+        String xsdPath = "gfc.xsd";
 
         String path = BASE_URI + xsdPath;
         InputStream is = this.getClass().getResourceAsStream(path);
@@ -79,18 +80,21 @@ public class SampleXmlGenerator {
         options = new XmlGenOptions();
         options.setGenCommentsForParticles(true);
         options.setGenChoiceOptionsAsComments(false);
-        options.setMaxRecursiveDepth(1);
+        options.setMaxRecursiveDepth(10);
         options.setMaxRepeatingElements(2);
         options.setDefVals(DefaultValues.DEFAULT);
 
         generator = new SchemaTypeXmlGenerator(coll, options);
 
-        QName elName = new QName("", "catalog");
+        QName elName = new QName("http://standards.iso.org/iso/19110/gfc/1.1", "FC_DefinitionReference");
 
         String xml = generator.generateXml(elName, true);
 
         assertNotNull(xml);
         assertTrue(xml.length() > 0);
 
+        PrintWriter out = new PrintWriter("FC_DefinitionReference.xml");
+        out.println(xml);
+        out.close();
     }
 }
